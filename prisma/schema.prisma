@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id          String    @id @default(cuid())
+  name        String
+  email       String
+  password    String
+  location    String
+  phoneNumber String
+  gender      String
+  role        String    @default("user")
+  birthDate   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model Polyclinics {
+  id             Int    @id @default(autoincrement())
+  polyclinicName String @unique
+  descriptions   String
+  image          String
+  schedule       String
+}
+
+model Doctors {
+  id            Int      @id @default(autoincrement())
+  polyclinicId  Int
+  polyName      String
+  name          String
+  email         String   @unique
+  gender        String
+  phoneNumber   String
+  image         String
+  descriptions  String
+  createdAt     DateTime @default(now())
+  location      String
+  schedules     Json
+  availableDays String[] @default([])
+}
+
+//  "name": "Dokter 2",
+//       "gender": "Wanita",
+//       "email": "ryan123@kusuma.com",
+//       "phoneNumber": 8555555555,
+//       "descriptions": "dddddd",
+//       "location": "reset season",
+//       "availableDays": [
+//         "Rabu"
+//       ],
+//       "polyclinicId": 4,
+//       "schedules": [
+//         {
+//           "day": "Rabu",
+//           "open": "23:19",
+//           "close": "23:19",
+//           "quota": 2,
+//           "booked": 0
+//         }
+//       ],
+//       "polyName": "Poli Keluarga Berencana (KB)",
+
+// model Schedule {
+//   id       Int     @id @default(autoincrement())
+//   day      String
+//   open     String
+//   close    String
+//   quota    Int
+//   booked   Int
+//   doctorId Int
+//   doctors  Doctors @relation(fields: [doctorId], references: [id])
+// }
+
+model Bookings {
+  id           Int       @id @default(autoincrement())
+  polyclinicId Int
+  userId       String
+  doctorId     Int
+  name         String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  status       String
+  queueNumber  Int
+  scheduleDay  String
+  bookingDate  String
+}
+
+model Queues {
+  id           Int    @id @default(autoincrement())
+  polyclinicId Int
+  date         String
+  currentQueue Int
+}

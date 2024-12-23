@@ -7,7 +7,7 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Menyalin package.json dan package-lock.json untuk install dependensi
-COPY package.json package-lock.json /app/
+COPY package*.json ./
 
 # Menginstall dependensi
 RUN npm install

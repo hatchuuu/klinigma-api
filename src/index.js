@@ -24,7 +24,7 @@ import registerController from './auth/register/register.controller.js'
 import verifyToken from './middleware/verify.token.js';
 
 //socket
-import handleSocket from './socket/websocket.js'
+// import handleSocket from './socket/websocket.js'
 
 dotenv.config()
 
@@ -60,7 +60,7 @@ app.get('/', (_, res) => {
     res.send('Server berjalan dengan Express dan Socket.IO');
 });
 
-handleSocket(server)
+// handleSocket(server)
 
 //Routes
 app.use('/api/auth/login', loginController)
@@ -75,11 +75,11 @@ app.use('/api/v1/queues', verifyToken, queueController)
 app.use('/api/v1/schedules', verifyToken, scheduleController)
 
 //Global Error Handle
-app.use((err, _, res) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-    });
-});
+// app.use((err, _, res) => {
+//     console.error(err.stack);
+//     res.status(err.status || 500).json({
+//         message: err.message || 'Internal Server Error',
+//     });
+// });
 
 server.listen(PORT, () => console.log(`Server Running On Port ${PORT}`))

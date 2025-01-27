@@ -1,10 +1,8 @@
 import express from 'express'
 import { createUser, deleteUserById, getAllUsers, getUserById, updateUser } from './user.service.js';
-import { putUserSchema, userSchema } from '../../lib/zodSchema.js';
 import { z } from 'zod';
 
 const router = express.Router()
-//      id, name, email, password, queue
 
 //Ambil semua data
 router.get("/", async (req, res) => {

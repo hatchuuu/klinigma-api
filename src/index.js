@@ -40,10 +40,17 @@ const limiter = rateLimit({
 });
 
 app.use(express.json());
-app.use(cors({
-    credentials: true,
-    origin: "*"
-}));
+app.use(cors(
+    //     {
+    //     credentials: true,
+    //     origin: "*" || "https://klinigma-api.vercel.app/"
+    // }
+    {
+        origin: '*', // Adjust origin to allow specific domains
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Specify allowed methods
+        allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    }
+));
 app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());

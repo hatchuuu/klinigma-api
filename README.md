@@ -149,7 +149,6 @@ Content-Type: application/json
 
    ```env
    PORT=5000
-   DATABASE_URL=your-database-url
    ACCESS_TOKEN_SECRET=your-jwt-secret
    REFRESH_TOKEN_SECRET=your-jwt-secret
    ```

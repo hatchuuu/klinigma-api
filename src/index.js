@@ -42,7 +42,7 @@ const limiter = rateLimit({
 app.use(express.json());
 app.use(cors({
     credentials: true,
-    origin: process.env.ORIGIN || "http://localhost:5173"
+    origin: "*"
 }));
 app.use(limiter);
 app.use(helmet());

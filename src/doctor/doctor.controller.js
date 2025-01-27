@@ -1,6 +1,5 @@
 import express from 'express'
 import { createDoctor, deleteDoctorById, getAllDoctors, getDoctorById, updateDoctor } from './doctor.service.js';
-import { doctorSchema, putDoctorSchema } from '../../lib/zodSchema.js';
 import { z } from 'zod';
 
 const router = express.Router()
@@ -10,7 +9,6 @@ router.get("/", async (req, res) => {
     try {
         const data = await getAllDoctors();
         res.status(200).json(data);
-        // res.status(200).json({ status: 200, message: "Berhasil Mengambil Data", data });
     } catch (error) {
         res.status(400).json({ status: 400, message: error.message });
     }
@@ -20,50 +18,49 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        if (isNaN(parseInt(id))) throw new Error("ID harus berupa angka");
-        const data = await getDoctorById(parseInt(id));
+        const data = await getDoctorById(id);
         res.status(200).json(data);
-        // res.status(200).json({ status: 200, message: "Berhasil Mengambil Dokter Berdasarkan Id", data });
     } catch (error) {
-        res.status(400).json({ status: 400, message: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
+
+/**
+ * name           String
+  polyclinic     Polyclinics       @relation(fields: [polyclinicId], references: [id])
+  polyclinicId   String
+  polyclinicName String
+  name, polyclinicId, polyclinicName
+ */
 //Tambah data
 router.post("/", async (req, res) => {
     try {
-        const { polyclinicId, polyName, name, email, descriptions, location, gender, schedules, availableDays } = req.body;
-        if (!polyclinicId || !polyName || !name || !email || !descriptions || !location || !gender || !schedules || !availableDays) {
+        const { name, polyclinicId, email } = req.body;
+        if (!name || !polyclinicId || !email) {
             throw new Error("Data tidak lengkap");
         }
-        // const payload = doctorSchema.parse(req.body);
-        console.log(req.body)
         await createDoctor(req.body)
-        res.status(200).json({ status: 200, message: "Berhasil Menambahkan Dokter" });
+        res.status(200).json({ message: "Berhasil Menambahkan Dokter" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });
-
-
-
 
 //Hapus data
 router.delete("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        if (isNaN(parseInt(id))) throw new Error("ID harus berupa angka");
-        await deleteDoctorById(parseInt(id));
-        res.status(200).json({ status: 200, message: "Berhasil Menghapus Dokter" });
+        await deleteDoctorById(id);
+        res.status(200).json({ message: "Berhasil Menghapus Dokter" });
     } catch (error) {
-        res.status(400).json({ status: 400, message: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -71,22 +68,19 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        if (isNaN(parseInt(id))) throw new Error("ID harus berupa angka");
-        const { polyclinicId, polyName, phoneNumber, name, email, descriptions, location, gender, schedules, availableDays } = req.body;
-        if (!polyclinicId || !phoneNumber || !polyName || !name || !email || !descriptions || !location || !gender || !schedules || !availableDays) {
+        const { name, polyclinicId, email } = req.body;
+        if (!name || !polyclinicId || !email) {
             throw new Error("Data tidak lengkap");
         }
-        const payload = doctorSchema.parse(req.body);
-        await updateDoctor(parseInt(id), payload);
-        res.status(200).json({ status: 200, message: "Berhasil Mengubah Dokter" });
+        await updateDoctor(id, req.body);
+        res.status(200).json({ message: "Berhasil Mengubah Dokter" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });
@@ -95,22 +89,18 @@ router.put("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        console.log(req.body);
-        if (isNaN(parseInt(id))) throw new Error("ID harus berupa angka");
         if (!req.body || Object.keys(req.body).length === 0) {
             throw new Error("Tidak Ada data yang akan diubah");
         }
-        const payload = putDoctorSchema.parse(req.body);
-        await updateDoctor(parseInt(id), payload);
-        res.status(200).json({ status: 200, message: "Berhasil Mengubah Dokter" });
+        await updateDoctor(id, req.body);
+        res.status(200).json({ message: "Berhasil Mengubah Dokter" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });

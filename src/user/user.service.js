@@ -1,6 +1,12 @@
 //functionya re-usable
-
+import { genSalt, hash } from 'bcrypt'
 import { deleteUser, editUser, findAllUsers, findUserByEmail, findUserById, insertUser } from "./user.repository.js";
+
+const encryptPassword = async (password) => {
+    const salt = await genSalt(10);
+    const hashPassword = await hash(password, salt);
+    return hashPassword;
+}
 
 export const getAllUsers = async () => {
     try {
@@ -24,19 +30,14 @@ export const getUserById = async (id) => {
 }
 
 export const createUser = async (payload) => {
-    //validasi apakah nama produk sudah ada
     try {
-        const validatedEmail = await findUserByEmail(payload.email);
+        const { email, password } = payload;
+        const validatedEmail = await findUserByEmail(email);
         if (validatedEmail) {
             throw new Error("Email sudah terdaftar");
         }
-        const newPayload = {
-            ...payload,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-
-        const user = await insertUser(newPayload);
+        const hashPassword = await encryptPassword(password);
+        const user = await insertUser({ ...payload, password: hashPassword });
         return user;
     } catch (error) {
         throw new Error(error.message);
@@ -54,14 +55,13 @@ export const deleteUserById = async (id) => {
 
 export const updateUser = async (id, payload) => {
     try {
+        const { password } = payload;
         const user = await findUserById(id);
         if (!user) {
             throw new Error("User dengan Id tersebut tidak ditemukan");
         }
-        const newPayload = {
-            ...payload, updatedAt: new Date()
-        }
-        await editUser(id, newPayload);
+        const hashPassword = await encryptPassword(password);
+        await editUser(id, { ...payload, password: hashPassword });
     } catch (error) {
         throw new Error(error.message);
     }

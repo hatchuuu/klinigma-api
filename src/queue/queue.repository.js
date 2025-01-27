@@ -4,12 +4,15 @@
 
 import { prisma } from "../../lib/prisma.js";
 
-export const findAllQueue = async () => {
+export const findAllQueue = async (data) => {
     try {
-        const queues = await prisma.queues.findMany();
+        const queues = await prisma.queues.findMany({
+            where: data
+        });
         return queues;
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 1");
+        console.log(error)
+        throw new Error("Kesalahan mengambil semua antrean");
     }
 }
 
@@ -20,15 +23,35 @@ export const findQueueById = async (id) => {
         });
         return queue;
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 2");
+        console.log(error)
+        throw new Error("Kesalahan mengambil antrean berdasarkan ID");
+    }
+}
+export const latestQueue = async (payload) => {
+    try {
+        const { doctorId, date, time } = payload
+        const latestQueue = await prisma.queues.findFirst({
+            where: {
+                doctorId, date, time
+            },
+            orderBy: {
+                queueNumber: 'desc'
+            }
+        })
+        return latestQueue ? latestQueue.queueNumber + 1 : 1;
+    } catch (error) {
+        console.log(error)
+        throw new Error("Kesalahan mengambil antrean terbaru");
     }
 }
 
 export const insertQueue = async (data) => {
+    console.log(data)
     try {
         await prisma.queues.create({ data });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 4");
+        console.log(error)
+        throw new Error("Kesalahan menambahkan antrean");
     }
 };
 
@@ -38,7 +61,8 @@ export const deleteQueue = async (id) => {
             where: { id },
         });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 5");
+        console.log(error)
+        throw new Error("Kesalahan menghapus antrean");
     }
 };
 
@@ -49,7 +73,8 @@ export const editQueue = async (id, data) => {
             data
         });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 6");
+        console.log(error)
+        throw new Error("Kesalahan mengubah antrean");
     }
 };
 

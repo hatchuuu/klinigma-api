@@ -8,98 +8,76 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Ubah provider ke SQLite
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite" // Ubah provider menjadi sqlite
+  url      = "file:./database.db" // Gunakan database lokal SQLite
+}
+
+model Admins {
+  id           String       @id @default(cuid())
+  name         String
+  email        String
+  password     String
+  role         String       @default("admin")
+  refreshToken String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?    @updatedAt
+  polyclinic   Polyclinics? @relation(fields: [polyclinicId], references: [id], onDelete: Cascade)
+  polyclinicId String?
 }
 
 model Users {
-  id          String    @id @default(cuid())
-  name        String
-  email       String
-  password    String
-  location    String
-  phoneNumber String
-  gender      String
-  role        String    @default("user")
-  birthDate   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  password     String
+  refreshToken String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  queues       Queues[] // Relasi antara user dan antrean
 }
 
-model Polyclinics {
-  id             Int    @id @default(autoincrement())
-  polyclinicName String @unique
-  descriptions   String
-  image          String
-  schedule       String
+model Schedules {
+  id        String  @id @default(cuid())
+  doctor    Doctors @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctorId  String
+  day       String // Contoh: "senin", "selasa"
+  startTime String // Jam mulai, contoh: "08:00"
+  endTime   String // Jam selesai, contoh: "16:00"
 }
 
 model Doctors {
-  id            Int      @id @default(autoincrement())
-  polyclinicId  Int
-  polyName      String
-  name          String
-  email         String   @unique
-  gender        String
-  phoneNumber   String
-  image         String
-  descriptions  String
-  createdAt     DateTime @default(now())
-  location      String
-  schedules     Json
-  availableDays String[] @default([])
+  id             String      @id @default(cuid())
+  name           String
+  email          String
+  polyclinic     Polyclinics @relation(fields: [polyclinicId], references: [id])
+  polyclinicId   String
+  polyclinicName String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime?   @updatedAt
+  schedules      Schedules[]
+  queues         Queues[] // Relasi dengan antrean
 }
 
-//  "name": "Dokter 2",
-//       "gender": "Wanita",
-//       "email": "ryan123@kusuma.com",
-//       "phoneNumber": 8555555555,
-//       "descriptions": "dddddd",
-//       "location": "reset season",
-//       "availableDays": [
-//         "Rabu"
-//       ],
-//       "polyclinicId": 4,
-//       "schedules": [
-//         {
-//           "day": "Rabu",
-//           "open": "23:19",
-//           "close": "23:19",
-//           "quota": 2,
-//           "booked": 0
-//         }
-//       ],
-//       "polyName": "Poli Keluarga Berencana (KB)",
-
-// model Schedule {
-//   id       Int     @id @default(autoincrement())
-//   day      String
-//   open     String
-//   close    String
-//   quota    Int
-//   booked   Int
-//   doctorId Int
-//   doctors  Doctors @relation(fields: [doctorId], references: [id])
-// }
-
-model Bookings {
-  id           Int       @id @default(autoincrement())
-  polyclinicId Int
-  userId       String
-  doctorId     Int
-  name         String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
-  status       String
-  queueNumber  Int
-  scheduleDay  String
-  bookingDate  String
+model Polyclinics {
+  id             String    @id @default(cuid())
+  polyclinicName String    @unique
+  descriptions   String
+  doctors        Doctors[] // Relasi ke dokter yang terhubung
+  admins         Admins[] // Relasi ke dokter yang terhubung
 }
 
 model Queues {
-  id           Int    @id @default(autoincrement())
-  polyclinicId Int
-  date         String
-  currentQueue Int
+  id          String   @id @default(cuid())
+  user        Users    @relation(fields: [userId], references: [id])
+  userId      String
+  doctor      Doctors  @relation(fields: [doctorId], references: [id])
+  doctorId    String
+  date        DateTime // Tanggal antrean
+  time        String // Waktu sesi
+  queueNumber Int
+  status      String   @default("waiting")
+
+  @@unique([userId, date, time]) // Membatasi user hanya bisa mendaftar sekali di waktu dan tanggal yang sama
 }

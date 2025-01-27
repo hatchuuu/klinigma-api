@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Doctors" ALTER COLUMN "invitedAt" SET DEFAULT CURRENT_TIMESTAMP;

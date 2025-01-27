@@ -4,15 +4,15 @@ import { putUserSchema, userSchema } from '../../lib/zodSchema.js';
 import { z } from 'zod';
 
 const router = express.Router()
+//      id, name, email, password, queue
 
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
         const data = await getAllUsers();
         res.status(200).json(data);
-        // res.status(200).json({ status: 200, message: "Berhasil Mengambil Data", data });
     } catch (error) {
-        res.status(400).json({ status: 400, message: error.message });
+        res.status(400).json(error)
     }
 });
 
@@ -20,33 +20,30 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
+
         const data = await getUserById(id);
         res.status(200).json(data);
-        // res.status(200).json({ status: 200, message: "Berhasil Mengambil User Berdasarkan Id", data });
     } catch (error) {
-        res.status(400).json({ status: 400, message: error.message });
+        res.status(400).json(error);
     }
 });
 
 //Tambah data
 router.post("/", async (req, res) => {
-    console.log(req.body)
     try {
-        const { name, email, password, location, phoneNumber, gender, birthDate } = req.body;
-        if (!name || !email || !password || !location || !phoneNumber || !gender || !birthDate) {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
             throw new Error("Data tidak lengkap");
         }
-        const payloadUser = userSchema.parse(req.body);
-        await createUser(payloadUser)
-        res.status(200).json({ status: 200, message: "Berhasil Menambahkan User" });
+        await createUser(req.body)
+        res.status(200).json({ message: "Berhasil Menambahkan User" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });
@@ -55,10 +52,11 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const id = req.params.id;
+
         await deleteUserById(id);
-        res.status(200).json({ status: 200, message: "Berhasil Menghapus User" });
+        res.status(200).json({ message: "Berhasil Menghapus User" });
     } catch (error) {
-        res.status(400).json({ status: 400, message: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -66,22 +64,19 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        //Buat sebuah kondisi ketika ada kolom yang tidak terisi
-        const { name, email, password, location, phoneNumber, gender, birthDate } = req.body;
-        if (!name || !email || !password || !location || !phoneNumber || !gender || !birthDate) {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
             throw new Error("Data tidak lengkap")
         }
-        const payload = userSchema.parse(req.body);
-        await updateUser(id, payload);
-        res.status(200).json({ status: 200, message: "Berhasil Mengubah User" });
+        await updateUser(id, req.body);
+        res.status(200).json({ message: "Berhasil Mengubah User" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });
@@ -94,17 +89,15 @@ router.patch("/:id", async (req, res) => {
         if (!req.body || Object.keys(req.body).length === 0) {
             throw new Error("Tidak Ada data yang akan diubah");
         }
-        const payload = putUserSchema.parse(req.body)
-        await updateUser(id, payload);
-        res.status(200).json({ status: 200, message: "Berhasil Mengubah User" });
+        await updateUser(id, req.body);
+        res.status(200).json({ message: "Berhasil Mengubah User" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
-                status: 400,
-                message: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
+                error: `${error.errors[0].message} - pada kolom ${error.errors[0].path[0]}`,
             });
         } else {
-            res.status(400).json({ status: 400, message: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });

@@ -1,51 +1,78 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import rateLimit from 'express-rate-limit'
+import helmet from 'helmet';
 import http from 'http'
+import cookieParser from 'cookie-parser';
+
+//controllers
 import userController from './user/user.controller.js'
-import doctorController from './doctor/doctor.controller.js'
-import bookingController from './booking/booking.controller.js'
-import polyController from './polyclinic/polyclinic.controller.js'
+import adminController from './admin/admin.controller.js'
 import queueController from './queue/queue.controller.js'
+import doctorController from './doctor/doctor.controller.js'
+import scheduleController from './schedule/schedule.controller.js'
+import polyController from './polyclinic/polyclinic.controller.js'
+
+//authentications
 import loginController from './auth/login/login.controller.js'
+import refreshToken from './auth/refresh-token/refresh.controller.js'
+import logoutController from './auth/logout/logout.controller.js'
+import registerController from './auth/register/register.controller.js'
+
+//middlewares
+import verifyToken from './middleware/verify.token.js';
+
+//socket
 import handleSocket from './socket/websocket.js'
 
 dotenv.config()
 
 const app = express()
 const server = http.createServer(app)
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3002
+
+//Rate Limiter
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: "Terlalu banyak permintaan, coba lagi.",
+});
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: process.env.ORIGIN || "http://localhost:5173"
+}));
+app.use(limiter);
+app.use(helmet());
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
+//Socket
+app.get('/', (_, res) => {
     res.send('Server berjalan dengan Express dan Socket.IO');
 });
 
 handleSocket(server)
 
+//Routes
+app.use('/api/auth/login', loginController)
+app.use('/api/auth/register', registerController)
+app.use('/api/auth/refresh-token', refreshToken)
+app.use('/api/auth/logout', logoutController)
+app.use('/api/v1/users', verifyToken, userController)
+app.use('/api/v1/admins', verifyToken, adminController)
+app.use('/api/v1/doctors', verifyToken, doctorController)
+app.use('/api/v1/polyclinics', verifyToken, polyController)
+app.use('/api/v1/queues', verifyToken, queueController)
+app.use('/api/v1/schedules', verifyToken, scheduleController)
 
-
-
-// 
-
-//USER
-app.use('/users', userController)
-
-//DOCTOR
-app.use('/doctors', doctorController)
-
-//BOOKINGG
-app.use('/bookings', bookingController)
-
-//LOGIN
-app.use('/login', loginController)
-
-//POLICLINIC
-app.use('/polyclinics', polyController)
-
-//QUEUES
-app.use('/queues', queueController)
+//Global Error Handle
+app.use((err, _, res) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+    });
+});
 
 server.listen(PORT, () => console.log(`Server Running On Port ${PORT}`))

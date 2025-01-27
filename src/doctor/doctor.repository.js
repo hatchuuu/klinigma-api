@@ -6,23 +6,27 @@ import { prisma } from "../../lib/prisma.js";
 
 export const findAllDoctors = async () => {
     try {
-        const doctors = await prisma.doctors.findMany({
-
-        });
+        const doctors = await prisma.doctors.findMany();
         return doctors
     } catch (error) {
-        throw new Error("Server Mengalami Gangguan 4");
+        console.log(error)
+        throw new Error("Kesalahan mengambil semua dokter");
     }
 }
 
 export const findDoctorById = async (id) => {
     try {
         const doctor = await prisma.doctors.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                schedules: true,
+                queues: true
+            }
         });
         return doctor;
     } catch (error) {
-        throw new Error(error);
+        console.log(error)
+        throw new Error("Kesalahan mengambil dokter berdasarkan ID");
     }
 }
 
@@ -33,17 +37,19 @@ export const findDoctorByEmail = async (email) => {
         });
         return doctor;
     } catch (error) {
-        throw new Error("Server Mengalami Gangguan 6");
+        console.log(error)
+        throw new Error("Kesalahan mengambil dokter berdasarkan email");
     }
 }
 
 export const insertDoctor = async (data) => {
+    console.log(data)
     try {
         const doctor = await prisma.doctors.create({ data });
         return doctor
     } catch (error) {
         console.log(error)
-        throw new Error(error);
+        throw new Error("Kesalahan saat menambahkan dokter");
     }
 };
 
@@ -53,7 +59,8 @@ export const deleteDoctor = async (id) => {
             where: { id },
         });
     } catch (error) {
-        throw new Error("Server Mengalami Gangguan34");
+        console.log(error)
+        throw new Error("Kesalahan menghapus dokter");
     }
 };
 
@@ -64,7 +71,8 @@ export const editDoctor = async (id, data) => {
             data
         });
     } catch (error) {
-        throw new Error(error);
+        console.log(error)
+        throw new Error("Kesalahan saat mengubah dokter");
     }
 };
 

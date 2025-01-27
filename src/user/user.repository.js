@@ -6,21 +6,40 @@ import { prisma } from "../../lib/prisma.js";
 
 export const findAllUsers = async () => {
     try {
-        const users = await prisma.users.findMany();
+        const users = await prisma.users.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
         return users;
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 1");
+        console.log(error)
+        throw new Error("Kesalahan mengambil semua user");
     }
 }
 
 export const findUserById = async (id) => {
     try {
         const user = await prisma.users.findUnique({
-            where: { id }
+            where: { id },
+            select: {
+                id: true,
+                name: true,
+                password: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                queues: true,
+            },
         });
         return user;
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 2");
+        console.log(error)
+        throw new Error("Kesalahan pencarian user berdasarkan id");
     }
 }
 
@@ -32,22 +51,42 @@ export const findUserByEmail = async (email) => {
                 id: true,
                 name: true,
                 password: true,
-                role: true
+                email: true
             }
         });
         return user;
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 3");
+        console.log(error)
+        throw new Error("Kesalahan pencarian user berdasarkan email");
+    }
+}
+
+export const findUserByRefreshToken = async (refreshToken) => {
+    try {
+        const user = await prisma.users.findFirst({
+            where: { refreshToken },
+            select: {
+                id: true,
+                name: true,
+                password: true,
+                email: true
+            }
+        });
+        return user;
+    } catch (error) {
+        console.log(error)
+        throw new Error("Kesalahan pencarian user berdasarkan token");
     }
 }
 
 export const insertUser = async (data) => {
     try {
         await prisma.users.create({
-            data: { ...data, updatedAt: new Date() }
+            data
         });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 4");
+        console.log(error)
+        throw new Error("Kesalahan dalam penambahan user");
     }
 };
 
@@ -57,7 +96,8 @@ export const deleteUser = async (id) => {
             where: { id },
         });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 5");
+        console.log(error)
+        throw new Error("Kesalahan dalam penghapusan user");
     }
 };
 
@@ -65,10 +105,11 @@ export const editUser = async (id, data) => {
     try {
         await prisma.users.update({
             where: { id },
-            data: { ...data, updatedAt: new Date() }
+            data
         });
     } catch (error) {
-        throw new Error("Server Terjadi Gangguan 6");
+        console.log(error)
+        throw new Error("Kesalahan dalam mengubah user");
     }
 };
 

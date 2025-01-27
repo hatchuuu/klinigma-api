@@ -1,7 +1,3 @@
-//berkomunikasi dengan database
-//dapat menggunakan orm atau query raw
-//supaya untuk mengganti ORM tinggal ganti pada file ini aja kok
-
 import prisma from "../../lib/prisma.js";
 
 export const findAllAdmins = async () => {

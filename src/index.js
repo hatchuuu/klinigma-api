@@ -53,7 +53,9 @@ app.use(cookieParser());
 
 //Socket
 app.get('/', (_, res) => {
-    res.send('Server berjalan dengan Express dan Socket.IO');
+    res.send('Selamat datang di klinigma API \n' +
+        "\n" +
+        "API Documentation: https://www.github.com/hatchuuu/klinigma-api");
 });
 
 handleSocket(server)

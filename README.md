@@ -9,7 +9,7 @@ This document describes the RESTful API for the application. The API enables aut
 ## Base URL
 
 ```
-https://klinigma-api.vercel.app/api
+https://klinigma-api.vercel.app
 ```
 
 ---

@@ -40,14 +40,15 @@ const PORT = process.env.PORT || 3000
 // });
 
 app.use(express.json());
-app.use(cors(
-    {
-        origin: '*',
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-    }
-));
+// app.use(cors(
+//     {
+//         origin: '*',
+//         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+//         allowedHeaders: ['Content-Type', 'Authorization'],
+//     }
+// ));
+app.use(cors({ origin: "http://localhost:5173" }));
+
 // app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
@@ -66,11 +67,11 @@ app.use('/api/auth/login', loginController)
 app.use('/api/auth/register', registerController)
 app.use('/api/auth/refresh-token', refreshToken)
 app.use('/api/auth/logout', logoutController)
-app.use('/api/v1/users', verifyToken, userController)
-app.use('/api/v1/admins', verifyToken, adminController)
-app.use('/api/v1/doctors', verifyToken, doctorController)
-app.use('/api/v1/polyclinics', verifyToken, polyController)
-app.use('/api/v1/queues', verifyToken, queueController)
-app.use('/api/v1/schedules', verifyToken, scheduleController)
+app.use('/api/v1/users', userController)
+app.use('/api/v1/admins', adminController)
+app.use('/api/v1/doctors', doctorController)
+app.use('/api/v1/polyclinics', polyController)
+app.use('/api/v1/queues', queueController)
+app.use('/api/v1/schedules', scheduleController)
 
 app.listen(PORT, () => console.log(`Server Running On Port ${PORT}`))

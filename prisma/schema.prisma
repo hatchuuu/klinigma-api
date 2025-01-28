@@ -3,17 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./database.db"
 }
 
 model Admins {
   id           String       @id @default(cuid())
   name         String
-  email        String
+  email        String       @unique
   password     String
-  role         String       @default("admin")
+  phoneNumber  String
+  location     String
+  gender       String
+  birthDate    DateTime
   refreshToken String?
+  image        String
+  role         String       @default("admin")
   createdAt    DateTime     @default(now())
   updatedAt    DateTime?    @updatedAt
   polyclinic   Polyclinics? @relation(fields: [polyclinicId], references: [id], onDelete: Cascade)
@@ -25,10 +30,20 @@ model Users {
   name         String
   email        String    @unique
   password     String
+  phoneNumber  String
+  location     String
+  gender       String
+  birthDate    DateTime
   refreshToken String?
+  numberKTP    String    @unique
+  numberKK     String
+  numberBPJS   String    @unique
+  imageId      String
+  imageSelfie  String
+  role         String    @default("user")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
-  queues       Queues[] // Relasi antara user dan antrean
+  queues       Queues[]
 }
 
 model Schedules {

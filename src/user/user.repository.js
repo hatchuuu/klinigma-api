@@ -11,6 +11,9 @@ export const findAllUsers = async () => {
                 id: true,
                 name: true,
                 email: true,
+                birthDate: true,
+                location: true,
+                phoneNumber: true,
                 createdAt: true,
                 updatedAt: true
             }
@@ -31,6 +34,11 @@ export const findUserById = async (id) => {
                 name: true,
                 password: true,
                 email: true,
+                location: true,
+                birthDate: true,
+                phoneNumber: true,
+                imageId: true,
+                imageSelfie: true,
                 createdAt: true,
                 updatedAt: true,
                 queues: true,
@@ -52,6 +60,31 @@ export const findUserByEmail = async (email) => {
                 name: true,
                 password: true,
                 email: true
+            }
+        });
+        return user;
+    } catch (error) {
+        console.log(error)
+        throw new Error("Kesalahan pencarian user berdasarkan email");
+    }
+}
+export const findUserByNumber = async (numberKTP, numberBPJS) => {
+    try {
+        const user = await prisma.users.findUnique({
+            where: { numberKTP, numberBPJS },
+            select: {
+                id: true,
+                name: true,
+                password: true,
+                email: true,
+                location: true,
+                birthDate: true,
+                phoneNumber: true,
+                imageId: true,
+                imageSelfie: true,
+                createdAt: true,
+                updatedAt: true,
+                queues: true,
             }
         });
         return user;

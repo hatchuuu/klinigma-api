@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
 import helmet from 'helmet';
-import http from 'http'
+// import http from 'http'
 import cookieParser from 'cookie-parser';
 
 //controllers
@@ -24,13 +24,13 @@ import registerController from './auth/register/register.controller.js'
 import verifyToken from './middleware/verify.token.js';
 
 //socket
-import handleSocket from './socket/websocket.js'
+// import handleSocket from './socket/websocket.js'
 
 dotenv.config()
 
 const app = express()
-const server = http.createServer(app)
-const PORT = process.env.PORT || 3002
+// const server = http.createServer(app)
+const PORT = process.env.PORT || 3000
 
 //Rate Limiter
 const limiter = rateLimit({
@@ -59,7 +59,7 @@ app.get('/', (_, res) => {
         "API Documentation: https://www.github.com/hatchuuu/klinigma-api");
 });
 
-handleSocket(server)
+// handleSocket(server)
 
 //Routes
 app.use('/api/auth/login', loginController)

@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import rateLimit from 'express-rate-limit'
+// import rateLimit from 'express-rate-limit'
 import helmet from 'helmet';
 // import http from 'http'
 import cookieParser from 'cookie-parser';
@@ -33,11 +33,11 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 //Rate Limiter
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: "Terlalu banyak permintaan, coba lagi.",
-});
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000,
+//     max: 100,
+//     message: "Terlalu banyak permintaan, coba lagi.",
+// });
 
 app.use(express.json());
 app.use(cors(
@@ -48,7 +48,7 @@ app.use(cors(
         allowedHeaders: ['Content-Type', 'Authorization'],
     }
 ));
-app.use(limiter);
+// app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
 
@@ -74,11 +74,11 @@ app.use('/api/v1/queues', queueController)
 app.use('/api/v1/schedules', scheduleController)
 
 //Global Error Handle
-app.use((err, _, res) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-    });
-});
+// app.use((err, _, res) => {
+//     console.error(err.stack);
+//     res.status(err.status || 500).json({
+//         message: err.message || 'Internal Server Error',
+//     });
+// });
 
 app.listen(PORT, () => console.log(`Server Running On Port ${PORT}`))

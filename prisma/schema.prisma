@@ -10,8 +10,8 @@ generator client {
 
 // Ubah provider ke SQLite
 datasource db {
-  provider = "sqlite" // Ubah provider menjadi sqlite
-  url      = "file:./database.db" // Gunakan database lokal SQLite
+  provider = "postgresql" // Ubah provider menjadi sqlite
+  url      = env("DATABASE_URL")
 }
 
 model Admins {

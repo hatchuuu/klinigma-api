@@ -20,7 +20,7 @@ export const verifyRefreshToken = async (refreshToken) => {
             }
             const { id, name, email } = response
             const accessToken = jwt.sign({ id, name, role, email }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: "15s"
+                expiresIn: "30s"
             })
             return accessToken
         })

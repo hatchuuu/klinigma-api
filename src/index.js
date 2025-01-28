@@ -20,8 +20,8 @@ import refreshToken from './auth/refresh-token/refresh.controller.js'
 import logoutController from './auth/logout/logout.controller.js'
 import registerController from './auth/register/register.controller.js'
 
-//middlewares
-// import verifyToken from './middleware/verify.token.js';
+// middlewares
+import verifyToken from './middleware/verify.token.js';
 
 //socket
 // import handleSocket from './socket/websocket.js'
@@ -66,19 +66,11 @@ app.use('/api/auth/login', loginController)
 app.use('/api/auth/register', registerController)
 app.use('/api/auth/refresh-token', refreshToken)
 app.use('/api/auth/logout', logoutController)
-app.use('/api/v1/users', userController)
-app.use('/api/v1/admins', adminController)
-app.use('/api/v1/doctors', doctorController)
-app.use('/api/v1/polyclinics', polyController)
-app.use('/api/v1/queues', queueController)
-app.use('/api/v1/schedules', scheduleController)
-
-//Global Error Handle
-// app.use((err, _, res) => {
-//     console.error(err.stack);
-//     res.status(err.status || 500).json({
-//         message: err.message || 'Internal Server Error',
-//     });
-// });
+app.use('/api/v1/users', verifyToken, userController)
+app.use('/api/v1/admins', verifyToken, adminController)
+app.use('/api/v1/doctors', verifyToken, doctorController)
+app.use('/api/v1/polyclinics', verifyToken, polyController)
+app.use('/api/v1/queues', verifyToken, queueController)
+app.use('/api/v1/schedules', verifyToken, scheduleController)
 
 app.listen(PORT, () => console.log(`Server Running On Port ${PORT}`))

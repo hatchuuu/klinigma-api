@@ -80,7 +80,7 @@ export const insertQueue = async (data) => {
     try {
         await prisma.queues.create({
             data: {
-                ...restData, // Semua data lain (queueNumber, time, status, date)
+                ...restData,
                 user: {
                     connect: { id: userId },
                 },

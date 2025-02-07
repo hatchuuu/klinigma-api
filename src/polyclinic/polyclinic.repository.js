@@ -1,8 +1,11 @@
 import prisma from "../../lib/prisma.js";
 
-export const findAllPolys = async () => {
+export const findAllPolys = async (skip, limit) => {
     try {
-        const polys = await prisma.polyclinics.findMany();
+        const polys = await prisma.polyclinics.findMany({
+            skip: skip,
+            take: limit,
+        });
         return polys;
     } catch (error) {
         console.log(error)
@@ -26,12 +29,12 @@ export const findPolyById = async (id) => {
         const poly = await prisma.polyclinics.findUnique({
             where: { id },
             include: {
-                admins: {
-                    select: {
-                        name: true,
-                        email: true
-                    }
-                },
+                // admins: {
+                //     select: {
+                //         name: true,
+                //         email: true
+                //     }
+                // },
                 doctors: {
                     select: {
                         name: true,

@@ -16,8 +16,8 @@ export const loginUser = async (data) => {
             if (!validatedUser || validatedUser.length === 0) {
                 throw new Error("Email tidak ditemukan")
             }
-            polyId = validatedUser.polyclinic.id
             role = validatedUser.role
+            if (role == "admin") polyId = validatedUser.polyclinic.id
         }
 
         const { password, id, name } = validatedUser

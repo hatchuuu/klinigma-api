@@ -9,9 +9,12 @@ const encryptPassword = async (password) => {
     return hashPassword;
 }
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (filters) => {
     try {
-        const users = await findAllUsers();
+        const { page, limit } = filters
+        const skip = (page - 1) * limit;
+
+        const users = await findAllUsers(skip, limit);
         return users;
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data User");

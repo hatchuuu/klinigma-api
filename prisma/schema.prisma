@@ -1,10 +1,16 @@
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./database.db"
+// }
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./database.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Admins {
@@ -47,13 +53,15 @@ model Users {
 }
 
 model Schedules {
-  id        String  @id @default(cuid())
-  doctor    Doctors @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  doctorId  String
-  day       String // Contoh: "senin", "selasa"
-  startTime String // Jam mulai, contoh: "08:00"
-  endTime   String // Jam selesai, contoh: "16:00"
-  quota     Int     @default(20)
+  id           String      @id @default(cuid())
+  doctor       Doctors     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctorId     String
+  polyclinic   Polyclinics @relation(fields: [polyclinicId], references: [id], onDelete: Cascade)
+  polyclinicId String
+  day          String // Contoh: "senin", "selasa"
+  startTime    String // Jam mulai, contoh: "08:00"
+  endTime      String // Jam selesai, contoh: "16:00"
+  quota        Int         @default(20)
 }
 
 model Doctors {
@@ -70,12 +78,13 @@ model Doctors {
 }
 
 model Polyclinics {
-  id             String    @id @default(cuid())
-  polyclinicName String    @unique
+  id             String      @id @default(cuid())
+  polyclinicName String      @unique
   descriptions   String
   doctors        Doctors[]
   admins         Admins[]
   queues         Queues[]
+  schedules      Schedules[]
 }
 
 model Queues {

@@ -1,8 +1,10 @@
 import { findAllPolys, findPolyByName, findPolyById, insertPoly, deletePoly, editPoly } from "./polyclinic.repository.js";
 
-export const getAllPoly = async () => {
+export const getAllPoly = async (filters) => {
     try {
-        const polys = await findAllPolys();
+        const { page, limit } = filters
+        const skip = (page - 1) * limit
+        const polys = await findAllPolys(skip, limit);
         return polys;
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data Poliklinik");

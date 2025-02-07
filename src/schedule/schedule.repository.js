@@ -3,7 +3,11 @@ import prisma from "../../lib/prisma.js";
 export const findAllSchedules = async (data) => {
     try {
         const schedules = await prisma.schedules.findMany({
-            where: data
+            where: data,
+            include: {
+                doctor: true,
+                polyclinic: true
+            }
         });
         return schedules;
     } catch (error) {
@@ -37,8 +41,21 @@ export const findScheduleById = async (id) => {
 
 export const insertSchedule = async (data) => {
     try {
+        const { doctorId, polyclinicId, ...restData } = data;
         await prisma.schedules.create({
-            data
+            data: {
+                ...restData,
+                doctor: {
+                    connect: {
+                        id: doctorId
+                    }
+                },
+                polyclinic: {
+                    connect: {
+                        id: polyclinicId
+                    }
+                },
+            }
         });
     } catch (error) {
         console.log(error)

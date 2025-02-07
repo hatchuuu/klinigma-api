@@ -4,9 +4,11 @@
 
 import prisma from "../../lib/prisma.js";
 
-export const findAllUsers = async () => {
+export const findAllUsers = async (skip, limit) => {
     try {
         const users = await prisma.users.findMany({
+            skip: skip,
+            take: limit,
             select: {
                 id: true,
                 name: true,

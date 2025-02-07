@@ -1,14 +1,30 @@
 import { findDoctorById } from "../doctor/doctor.repository.js";
+import { findPolyById } from "../polyclinic/polyclinic.repository.js";
 import { findAllSchedules, findScheduleById, insertSchedule, deleteSchedule, editSchedule, findScheduleByDoctor } from "./schedule.repository.js";
 
 export const getAllSchedules = async (filters) => {
     try {
-        const { doctorId } = filters;
-        const validatedDoctor = await findDoctorById(doctorId);
-        if (!validatedDoctor) throw new Error("Dokter tersebut tidak ditemukan");
+        const { doctorId, polyclinicId, time, day } = filters;
+        const filter = {}
+        if (doctorId) {
+            const validatedDoctor = await findDoctorById(doctorId);
+            if (!validatedDoctor) throw new Error("Dokter tersebut tidak ditemukan");
+            filter["doctorId"] = doctorId
+        }
+        if (polyclinicId) {
+            const validatedPoly = await findPolyById(polyclinicId);
+            if (!validatedPoly) throw new Error("Poliklinik tersebut tidak ditemukan");
+            filter["polyclinicId"] = polyclinicId
+        }
 
-        const schedules = await findAllSchedules(filters);
-        return schedules;
+        const schedules = await findAllSchedules({ ...filter, day });
+
+        if (time) {
+            const response = schedules.find(s => s.startTime <= time && s.endTime >= time)
+            return response
+        } else {
+            return schedules
+        }
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data Jadwal");
     }
@@ -28,6 +44,9 @@ export const getScheduleById = async (id) => {
 
 export const createSchedule = async (payload) => {
     try {
+        const validatedPoly = await findPolyById(payload.polyclinicId);
+        if (!validatedPoly) throw new Error("Poliklinik tersebut tidak ditemukan");
+
         const doctorSchedule = await findScheduleByDoctor(payload.doctorId);
         const existingDay = doctorSchedule.find(data => data.day === payload.day);
 

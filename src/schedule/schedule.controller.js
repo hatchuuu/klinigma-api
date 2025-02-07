@@ -6,7 +6,6 @@ const router = express.Router()
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const { doctorId } = req.query;
         const data = await getAllSchedules(req.query);
         res.status(200).json(data);
     } catch (error) {
@@ -31,12 +30,12 @@ router.get("/:id", async (req, res) => {
 //Tambah data
 router.post("/", async (req, res) => {
     try {
-        const { doctorId, day, startTime, endTime, quota } = req.body;
-        if (!doctorId || !day || !startTime || !endTime || !quota) {
+        const { doctorId, day, startTime, endTime, quota, polyclinicId } = req.body;
+        if (!doctorId || !day || !startTime || !endTime || !quota || !polyclinicId) {
             throw new Error("Data tidak lengkap");
         }
         const parseQuota = parseInt(quota);
-        await createSchedule({ doctorId, day, startTime, endTime, quota: parseQuota });
+        await createSchedule({ doctorId, day, startTime, endTime, quota: parseQuota, polyclinicId });
         res.status(201).json({ message: "Berhasil Menambahkan Jadwal" });
     } catch (error) {
         if (error instanceof z.ZodError) {

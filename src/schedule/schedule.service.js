@@ -1,8 +1,13 @@
+import { findDoctorById } from "../doctor/doctor.repository.js";
 import { findAllSchedules, findScheduleById, insertSchedule, deleteSchedule, editSchedule, findScheduleByDoctor } from "./schedule.repository.js";
 
-export const getAllSchedules = async () => {
+export const getAllSchedules = async (filters) => {
     try {
-        const schedules = await findAllSchedules();
+        const { doctorId } = filters;
+        const validatedDoctor = await findDoctorById(doctorId);
+        if (!validatedDoctor) throw new Error("Dokter tersebut tidak ditemukan");
+
+        const schedules = await findAllSchedules(filters);
         return schedules;
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data Jadwal");
@@ -23,14 +28,16 @@ export const getScheduleById = async (id) => {
 
 export const createSchedule = async (payload) => {
     try {
-        const response = await findScheduleByDoctor(payload.doctorId);
-        response.forEach(data => {
-            if (data.day == payload.day) {
-                throw new Error("Jadwal Dokter pada hari tersebut sudah ada");
-            }
-        });
-        const schedule = await insertSchedule(payload);
-        return schedule;
+        const doctorSchedule = await findScheduleByDoctor(payload.doctorId);
+        const existingDay = doctorSchedule.find(data => data.day === payload.day);
+
+        if (existingDay) {
+            const response = await updateSchedule(existingDay.id, payload)
+            return response
+        } else {
+            const response = await insertSchedule(payload);
+            return response;
+        }
     } catch (error) {
         throw new Error(error.message);
     }

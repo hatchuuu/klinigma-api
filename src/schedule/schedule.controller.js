@@ -6,7 +6,8 @@ const router = express.Router()
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const data = await getAllSchedules();
+        const { doctorId } = req.query;
+        const data = await getAllSchedules(req.query);
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -30,13 +31,13 @@ router.get("/:id", async (req, res) => {
 //Tambah data
 router.post("/", async (req, res) => {
     try {
-        console.log(req.body)
-        const { doctorId, day, startTime, endTime } = req.body;
-        if (!doctorId || !day || !startTime || !endTime) {
+        const { doctorId, day, startTime, endTime, quota } = req.body;
+        if (!doctorId || !day || !startTime || !endTime || !quota) {
             throw new Error("Data tidak lengkap");
         }
-        await createSchedule(req.body)
-        res.status(200).json({ message: "Berhasil Menambahkan Jadwal" });
+        const parseQuota = parseInt(quota);
+        await createSchedule({ doctorId, day, startTime, endTime, quota: parseQuota });
+        res.status(201).json({ message: "Berhasil Menambahkan Jadwal" });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({
@@ -63,8 +64,8 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const { doctorId, day, startTime, endTime, isHoliday } = req.body;
-        if (!doctorId || !day || !startTime || !endTime || !isHoliday) {
+        const { doctorId, day, startTime, endTime, quota } = req.body;
+        if (!doctorId || !day || !startTime || !endTime || !quota) {
             throw new Error("Data tidak lengkap");
         }
         await updateSchedule(id, req.body);

@@ -4,9 +4,21 @@
 
 import prisma from "../../lib/prisma.js";
 
-export const findAllDoctors = async () => {
+export const findAllDoctors = async (data) => {
     try {
-        const doctors = await prisma.doctors.findMany();
+        const doctors = await prisma.doctors.findMany({
+            where: data,
+            include: {
+                schedules: {
+                    select: {
+                        day: true,
+                        startTime: true,
+                        endTime: true,
+                        quota: true,
+                    }
+                }
+            }
+        });
         return doctors
     } catch (error) {
         console.log(error)

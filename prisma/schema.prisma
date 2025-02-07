@@ -53,13 +53,14 @@ model Schedules {
   day       String // Contoh: "senin", "selasa"
   startTime String // Jam mulai, contoh: "08:00"
   endTime   String // Jam selesai, contoh: "16:00"
+  quota     Int     @default(20)
 }
 
 model Doctors {
   id             String      @id @default(cuid())
   name           String
   email          String
-  polyclinic     Polyclinics @relation(fields: [polyclinicId], references: [id])
+  polyclinic     Polyclinics @relation(fields: [polyclinicId], references: [id], onDelete: Cascade)
   polyclinicId   String
   polyclinicName String
   createdAt      DateTime    @default(now())
@@ -72,20 +73,25 @@ model Polyclinics {
   id             String    @id @default(cuid())
   polyclinicName String    @unique
   descriptions   String
-  doctors        Doctors[] // Relasi ke dokter yang terhubung
-  admins         Admins[] // Relasi ke dokter yang terhubung
+  doctors        Doctors[]
+  admins         Admins[]
+  queues         Queues[]
 }
 
 model Queues {
-  id          String   @id @default(cuid())
-  user        Users    @relation(fields: [userId], references: [id])
-  userId      String
-  doctor      Doctors  @relation(fields: [doctorId], references: [id])
-  doctorId    String
-  date        DateTime // Tanggal antrean
-  time        String // Waktu sesi
-  queueNumber Int
-  status      String   @default("waiting")
+  id           String      @id @default(cuid())
+  user         Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  doctor       Doctors     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctorId     String
+  polyclinic   Polyclinics @relation(fields: [polyclinicId], references: [id], onDelete: Cascade)
+  polyclinicId String
+  date         String      @default("20-11-2024") // Tanggal antrean 
+  time         String
+  queueNumber  Int
+  status       String      @default("waiting")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime?   @updatedAt
 
   @@unique([userId, date, time]) // Membatasi user hanya bisa mendaftar sekali di waktu dan tanggal yang sama
 }

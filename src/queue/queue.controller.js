@@ -1,15 +1,24 @@
 import express from 'express'
 import { createQueue, deleteQueueById, getAllQueue, getQueueById, updateQueue } from './queue.service.js';
+import dayjs from 'dayjs';
 
 const router = express.Router()
 
-//Ambil semua data
 router.get("/", async (req, res) => {
-    const { status, doctorId, date, time, userId } = req.query
+    const { status, doctorId, date, time, userId, polyclinicId, sort, page = 1, limit = 10 } = req.query
     const parsedDate = date ? new Date(date) : undefined;
 
-    const filters = { status, doctorId, parsedDate, time, userId }
-
+    const filters = {
+        status,
+        doctorId,
+        sort,
+        time,
+        userId,
+        polyclinicId,
+        date: parsedDate,
+        page: parseInt(page),
+        limit: parseInt(limit)
+    }
     try {
         const data = await getAllQueue(filters);
         res.status(200).json(data);
@@ -32,21 +41,29 @@ router.get("/:id", async (req, res) => {
 //Tambah data
 router.post("/", async (req, res) => {
     try {
-        const { userId, doctorId, date, status, time } = req.body;
-        if (!userId || !doctorId || !date || !status || !time) {
+        const { userId, doctorId, date } = req.body;
+        if (!userId || !doctorId || !date) {
             throw new Error("Data tidak lengkap")
         }
-        const parsedDate = date ? new Date(date) : undefined;
-        const now = new Date();
-        const maxDate = new Date();
-        maxDate.setDate(now.getDate() + 7);
 
-        if (!parsedDate || parsedDate < now || parsedDate > maxDate) {
-            throw new Error("Tanggal tidak sesuai")
+        const parsedDate = dayjs(date, "DD-MM-YYYY", true);
+        if (!parsedDate.isValid()) {
+            throw new Error("Format tanggal harus DD-MM-YYYY");
         }
-        const data = { status, doctorId, date: parsedDate, time, userId }
+
+        const today = dayjs().startOf("day");
+        const maxDate = today.add(7, "day");
+
+        if (parsedDate.isBefore(today)) {
+            throw new Error("Tanggal tidak boleh kurang dari hari ini");
+        }
+        if (parsedDate.isAfter(maxDate)) {
+            throw new Error("Tanggal tidak boleh lebih dari 7 hari dari sekarang");
+        }
+
+        const data = { doctorId, date, userId }
         await createQueue(data)
-        res.status(200).json({ message: "Berhasil Menambahkan Antrean" });
+        res.status(201).json({ message: "Berhasil Menambahkan Antrean" });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -85,7 +102,7 @@ router.patch("/:id", async (req, res) => {
         if (!req.body || Object.keys(req.body).length === 0) {
             throw new Error("Tidak Ada data yang akan diubah");
         }
-        await updateQueue(id, payload);
+        await updateQueue(id, req.body);
         res.status(200).json({ message: "Berhasil Mengubah Antrean" });
     } catch (error) {
         res.status(400).json({ error: error.message });

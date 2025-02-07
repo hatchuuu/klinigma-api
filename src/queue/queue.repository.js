@@ -4,11 +4,40 @@
 
 import prisma from "../../lib/prisma.js";
 
-export const findAllQueue = async (data) => {
+export const findAllQueue = async (data, sort, skip, limit) => {
     try {
         const queues = await prisma.queues.findMany({
-            where: data
-        });
+            where: data,
+            orderBy: sort,
+            skip: skip,
+            take: limit,
+            select: {
+                polyclinic: {
+                    select: {
+                        polyclinicName: true
+                    }
+                },
+                id: true,
+                userId: true,
+                doctor: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                user: {
+                    select: {
+                        name: true
+                    }
+                },
+                date: true,
+                time: true,
+                queueNumber: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        })
         return queues;
     } catch (error) {
         console.log(error)
@@ -29,10 +58,10 @@ export const findQueueById = async (id) => {
 }
 export const latestQueue = async (payload) => {
     try {
-        const { doctorId, date, time } = payload
+        const { doctorId, date } = payload
         const latestQueue = await prisma.queues.findFirst({
             where: {
-                doctorId, date, time
+                doctorId, date
             },
             orderBy: {
                 queueNumber: 'desc'
@@ -46,14 +75,29 @@ export const latestQueue = async (payload) => {
 }
 
 export const insertQueue = async (data) => {
-    console.log(data)
+    const { userId, doctorId, polyclinicId, ...restData } = data;
+
     try {
-        await prisma.queues.create({ data });
+        await prisma.queues.create({
+            data: {
+                ...restData, // Semua data lain (queueNumber, time, status, date)
+                user: {
+                    connect: { id: userId },
+                },
+                doctor: {
+                    connect: { id: doctorId },
+                },
+                polyclinic: {
+                    connect: { id: polyclinicId },
+                },
+            },
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         throw new Error("Kesalahan menambahkan antrean");
     }
 };
+
 
 export const deleteQueue = async (id) => {
     try {

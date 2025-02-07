@@ -1,11 +1,20 @@
 //functionya re-usable
 
 import { findPolyById } from "../polyclinic/polyclinic.repository.js";
+import { findAllSchedules } from "../schedule/schedule.repository.js";
+import { updateSchedule } from "../schedule/schedule.service.js";
 import { findAllDoctors, findDoctorById, findDoctorByEmail, insertDoctor, deleteDoctor, editDoctor } from "./doctor.repository.js";
 
-export const getAllDoctors = async () => {
+export const getAllDoctors = async (filters) => {
     try {
-        const doctors = await findAllDoctors();
+        const { polyclinicId } = filters;
+        if (polyclinicId) {
+            const validatedPoly = await findPolyById(polyclinicId);
+            if (!validatedPoly) {
+                throw new Error("Poliklinik tidak ditemukan");
+            }
+        }
+        const doctors = await findAllDoctors(filters);
         return doctors;
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data Dokter");
@@ -53,6 +62,23 @@ export const updateDoctor = async (id, payload) => {
             throw new Error("Dokter dengan Id tersebut tidak ditemukan");
         }
         await editDoctor(id, payload);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const updateScheduleByDoctor = async (doctorId, payload, count = -1) => {
+    try {
+        const { day } = payload;
+        const validatedDoctor = await findAllSchedules({ doctorId });
+        validatedDoctor.forEach(data => {
+            if (data.day == day) {
+                if (data.quota > 0) {
+                    return updateSchedule(data.id, { quota: data.quota + count })
+                }
+                throw new Error("Jadwal Dokter pada hari tersebut sudah penuh");
+            }
+        })
     } catch (error) {
         throw new Error(error.message);
     }

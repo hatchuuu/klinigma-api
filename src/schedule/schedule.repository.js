@@ -1,8 +1,10 @@
 import prisma from "../../lib/prisma.js";
 
-export const findAllSchedules = async () => {
+export const findAllSchedules = async (data) => {
     try {
-        const schedules = await prisma.schedules.findMany();
+        const schedules = await prisma.schedules.findMany({
+            where: data
+        });
         return schedules;
     } catch (error) {
         console.log(error)

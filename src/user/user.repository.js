@@ -12,6 +12,7 @@ export const findAllUsers = async () => {
                 name: true,
                 email: true,
                 birthDate: true,
+                gender: true,
                 location: true,
                 phoneNumber: true,
                 createdAt: true,
@@ -38,6 +39,7 @@ export const findUserById = async (id) => {
                 birthDate: true,
                 phoneNumber: true,
                 imageId: true,
+                gender: true,
                 imageSelfie: true,
                 createdAt: true,
                 updatedAt: true,
@@ -53,7 +55,7 @@ export const findUserById = async (id) => {
 
 export const findUserByEmail = async (email) => {
     try {
-        const user = await prisma.users.findFirst({
+        const user = await prisma.users.findUnique({
             where: { email },
             select: {
                 id: true,
@@ -68,6 +70,7 @@ export const findUserByEmail = async (email) => {
         throw new Error("Kesalahan pencarian user berdasarkan email");
     }
 }
+
 export const findUserByNumber = async (numberKTP, numberBPJS) => {
     try {
         const user = await prisma.users.findUnique({
@@ -78,6 +81,7 @@ export const findUserByNumber = async (numberKTP, numberBPJS) => {
                 password: true,
                 email: true,
                 location: true,
+                gender: true,
                 birthDate: true,
                 phoneNumber: true,
                 imageId: true,
@@ -90,7 +94,7 @@ export const findUserByNumber = async (numberKTP, numberBPJS) => {
         return user;
     } catch (error) {
         console.log(error)
-        throw new Error("Kesalahan pencarian user berdasarkan email");
+        throw new Error("Kesalahan pencarian user berdasarkan nomor KTP atau nomor BPJS");
     }
 }
 

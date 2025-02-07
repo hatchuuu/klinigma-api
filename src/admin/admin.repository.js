@@ -34,10 +34,15 @@ export const findAdminById = async (id) => {
                 password: true,
                 email: true,
                 role: true,
+                gender: true,
+                birthDate: true,
+                phoneNumber: true,
+                location: true,
                 createdAt: true,
                 updatedAt: true,
                 polyclinic: {
                     select: {
+                        id: true,
                         polyclinicName: true,
                     },
                 },
@@ -59,7 +64,12 @@ export const findAdminByEmail = async (email) => {
                 name: true,
                 password: true,
                 email: true,
-                role: true
+                role: true,
+                polyclinic: {
+                    select: {
+                        id: true,
+                    }
+                }
             },
         });
         return admin;

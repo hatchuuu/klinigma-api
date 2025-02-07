@@ -47,7 +47,7 @@ app.use(express.json());
 //         allowedHeaders: ['Content-Type', 'Authorization'],
 //     }
 // ));
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: " https://klinigma-api.vercel.app" }));
 
 // app.use(limiter);
 app.use(helmet());

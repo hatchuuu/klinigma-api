@@ -37,16 +37,16 @@ export const createUser = async (payload) => {
     try {
         const { email, password } = payload;
         const validatedEmail = await findUserByEmail(email);
-        const validatedKTP = await findUserByKTP(payload.numberKTP);
-        const validatedBPJS = await findUserByBPJS(payload.numberBPJS);
+        // const validatedKTP = await findUserByKTP(payload.numberKTP);
+        // const validatedBPJS = await findUserByBPJS(payload.numberBPJS);
+        // if (validatedKTP) {
+        //     throw new Error("Nomor KTP sudah terdaftar");
+        // }
+        // if (validatedBPJS) {
+        //     throw new Error("Nomor BPJS sudah terdaftar");
+        // }
         if (validatedEmail) {
             throw new Error("Email sudah terdaftar");
-        }
-        if (validatedKTP) {
-            throw new Error("Nomor KTP sudah terdaftar");
-        }
-        if (validatedBPJS) {
-            throw new Error("Nomor BPJS sudah terdaftar");
         }
         const hashPassword = await encryptPassword(password);
         const user = await insertUser(

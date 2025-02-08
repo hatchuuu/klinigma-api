@@ -71,30 +71,30 @@ export const findUserByEmail = async (email) => {
     }
 }
 
-export const findUserByKTP = async (numberKTP) => {
-    try {
-        const user = await prisma.users.findUnique({
-            where: { numberKTP },
-            select: { id: true }
-        });
-        return user;
-    } catch (error) {
-        console.log(error)
-        throw new Error("Kesalahan pencarian user berdasarkan nomor KTP");
-    }
-}
-export const findUserByBPJS = async (numberBPJS) => {
-    try {
-        const user = await prisma.users.findUnique({
-            where: { numberBPJS },
-            select: { id: true }
-        });
-        return user;
-    } catch (error) {
-        console.log(error)
-        throw new Error("Kesalahan pencarian user berdasarkan nomor BPJS");
-    }
-}
+// export const findUserByKTP = async (numberKTP) => {
+//     try {
+//         const user = await prisma.users.findUnique({
+//             where: { numberKTP },
+//             select: { id: true }
+//         });
+//         return user;
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error("Kesalahan pencarian user berdasarkan nomor KTP");
+//     }
+// }
+// export const findUserByBPJS = async (numberBPJS) => {
+//     try {
+//         const user = await prisma.users.findUnique({
+//             where: { numberBPJS },
+//             select: { id: true }
+//         });
+//         return user;
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error("Kesalahan pencarian user berdasarkan nomor BPJS");
+//     }
+// }
 
 export const findUserByRefreshToken = async (refreshToken) => {
     try {

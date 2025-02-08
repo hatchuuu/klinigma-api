@@ -71,16 +71,28 @@ export const findUserByEmail = async (email) => {
     }
 }
 
-export const findUserByNumber = async (numberKTP, numberBPJS) => {
+export const findUserByKTP = async (numberKTP) => {
     try {
         const user = await prisma.users.findUnique({
-            where: { numberKTP, numberBPJS },
+            where: { numberKTP },
             select: { id: true }
         });
         return user;
     } catch (error) {
         console.log(error)
-        throw new Error("Kesalahan pencarian user berdasarkan nomor KTP atau nomor BPJS");
+        throw new Error("Kesalahan pencarian user berdasarkan nomor KTP");
+    }
+}
+export const findUserByBPJS = async (numberBPJS) => {
+    try {
+        const user = await prisma.users.findUnique({
+            where: { numberBPJS },
+            select: { id: true }
+        });
+        return user;
+    } catch (error) {
+        console.log(error)
+        throw new Error("Kesalahan pencarian user berdasarkan nomor BPJS");
     }
 }
 

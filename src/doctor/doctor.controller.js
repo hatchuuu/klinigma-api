@@ -7,10 +7,10 @@ const router = express.Router()
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const { polyclinicId } = req.query
-        const filters = {
-            polyclinicId
-        }
+        let { polyclinicId, page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+        const filters = { polyclinicId, page, limit }
         const data = await getAllDoctors(filters);
         res.status(200).json(data);
     } catch (error) {

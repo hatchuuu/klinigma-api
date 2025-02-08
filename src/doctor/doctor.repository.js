@@ -4,10 +4,12 @@
 
 import prisma from "../../lib/prisma.js";
 
-export const findAllDoctors = async (data) => {
+export const findAllDoctors = async (data, skip, limit) => {
     try {
         const doctors = await prisma.doctors.findMany({
             where: data,
+            skip: skip,
+            take: limit,
             include: {
                 schedules: {
                     select: {

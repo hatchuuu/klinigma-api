@@ -1,15 +1,12 @@
 import express from 'express'
 import { z } from 'zod';
-import upload, { deleteFile } from '../../../utils/multer.js';
 import { createUser } from '../../user/user.service.js';
 import dayjs from 'dayjs';
 import { userSchema } from '../../../lib/zodSchema.js';
 
 const router = express.Router()
 //
-router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), async (req, res) => {
-    const imageId = req.files.imageId?.[0] || null;
-    const imageSelfie = req.files.imageSelfie?.[0] || null;
+router.post("/", async (req, res) => {
     try {
         const { name, email, password, confirmPassword, location, birthDate, gender, phoneNumber, numberKTP, numberKK, numberBPJS } = req.body;
 
@@ -24,8 +21,6 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
             || !numberKTP
             || !numberKK
             || !numberBPJS
-            || !imageId
-            || !imageSelfie
         ) {
             throw new Error("Data tidak lengkap");
         }
@@ -43,10 +38,7 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
         await createUser({
             ...newPayload,
             birthDate: isoDate,
-        },
-            imageId.path,
-            imageSelfie.path
-        );
+        });
         res.status(201).json({ message: "Registrasi Berhasil" });
 
     } catch (error) {
@@ -57,8 +49,6 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
         } else {
             res.status(400).json({ error: error.message });
         }
-        deleteFile(imageId.path);
-        deleteFile(imageSelfie.path);
     }
 });
 

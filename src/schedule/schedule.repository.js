@@ -1,9 +1,11 @@
 import prisma from "../../lib/prisma.js";
 
-export const findAllSchedules = async (data) => {
+export const findAllSchedules = async (data, skip, limit) => {
     try {
         const schedules = await prisma.schedules.findMany({
             where: data,
+            skip: skip,
+            take: limit,
             include: {
                 doctor: true,
                 polyclinic: true

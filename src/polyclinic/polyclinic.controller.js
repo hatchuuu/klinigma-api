@@ -6,12 +6,14 @@ const router = express.Router()
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const filters = {
-            page: parseInt(page),
-            limit: parseInt(limit)
-        }
+        let { page, limit } = req.query;
+
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+
+        const filters = { page, limit };
         const data = await getAllPoly(filters);
+
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json({ error: error.message });

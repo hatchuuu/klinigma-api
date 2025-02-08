@@ -7,14 +7,15 @@ import { findAllDoctors, findDoctorById, findDoctorByEmail, insertDoctor, delete
 
 export const getAllDoctors = async (filters) => {
     try {
-        const { polyclinicId } = filters;
+        const { polyclinicId, limit, page } = filters;
+        const skip = (page - 1) * limit
         if (polyclinicId) {
             const validatedPoly = await findPolyById(polyclinicId);
             if (!validatedPoly) {
                 throw new Error("Poliklinik tidak ditemukan");
             }
         }
-        const doctors = await findAllDoctors(filters);
+        const doctors = await findAllDoctors({ polyclinicId }, skip, limit);
         return doctors;
     } catch (error) {
         throw new Error("Gagal Mengambil Seluruh Data Dokter");

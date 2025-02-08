@@ -1,22 +1,24 @@
 import express from 'express'
 import { createUser, deleteUserById, getAllUsers, getUserById, updateUser } from './user.service.js';
 import { z } from 'zod';
-import upload from '../../utils/multer.js';
+import { userSchema } from '../../lib/zodSchema.js';
+import dayjs from 'dayjs';
 
 const router = express.Router()
 
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const filters = {
-            page: parseInt(page),
-            limit: parseInt(limit)
-        }
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+
+        const filters = { page, limit };
         const data = await getAllUsers(filters);
+
         res.status(200).json(data);
     } catch (error) {
-        res.status(400).json(error)
+        res.status(400).json(error);
     }
 });
 
@@ -33,9 +35,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //Tambah data
-router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), async (req, res) => {
-    const imageId = req.files.imageId?.[0] || null;
-    const imageSelfie = req.files.imageSelfie?.[0] || null;
+router.post("/", async (req, res) => {
     try {
         const { name, email, password, confirmPassword, location, birthDate, gender, phoneNumber, numberKTP, numberKK, numberBPJS } = req.body;
 
@@ -50,8 +50,6 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
             || !numberKTP
             || !numberKK
             || !numberBPJS
-            || !imageId
-            || !imageSelfie
         ) {
             throw new Error("Data tidak lengkap");
         }
@@ -69,10 +67,7 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
         await createUser({
             ...newPayload,
             birthDate: isoDate,
-        },
-            imageId.path,
-            imageSelfie.path
-        );
+        });
         res.status(201).json({ message: "Berhasil menambahkan user" });
 
     } catch (error) {
@@ -83,8 +78,6 @@ router.post("/", upload.fields([{ name: "imageId" }, { name: "imageSelfie" }]), 
         } else {
             res.status(400).json({ error: error.message });
         }
-        deleteFile(imageId.path);
-        deleteFile(imageSelfie.path);
     }
 });
 

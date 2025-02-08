@@ -40,14 +40,13 @@ const PORT = process.env.PORT || 3000
 // });
 
 app.use(express.json());
-// app.use(cors(
-//     {
-//         origin: '*',
-//         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-//         allowedHeaders: ['Content-Type', 'Authorization'],
-//     }
-// ));
-app.use(cors({ origin: " https://klinigma.vercel.app" }));
+app.use(cors(
+    {
+        origin: ["https://klinigma.vercel.app", "http://localhost:5173"],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }
+));
 
 // app.use(limiter);
 app.use(helmet());

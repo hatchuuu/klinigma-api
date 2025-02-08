@@ -6,7 +6,12 @@ const router = express.Router()
 //Ambil semua data
 router.get("/", async (req, res) => {
     try {
-        const data = await getAllSchedules(req.query);
+        let { doctorId, polyclinicId, time, day, page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+
+        const filter = { doctorId, polyclinicId, time, day, page, limit }
+        const data = await getAllSchedules(filter);
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json({ error: error.message });

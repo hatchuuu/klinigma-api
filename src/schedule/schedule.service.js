@@ -4,7 +4,8 @@ import { findAllSchedules, findScheduleById, insertSchedule, deleteSchedule, edi
 
 export const getAllSchedules = async (filters) => {
     try {
-        const { doctorId, polyclinicId, time, day } = filters;
+        const { doctorId, polyclinicId, time, day, page, limit } = filters;
+        const skip = (page - 1) * limit;
         const filter = {}
         if (doctorId) {
             const validatedDoctor = await findDoctorById(doctorId);
@@ -16,8 +17,11 @@ export const getAllSchedules = async (filters) => {
             if (!validatedPoly) throw new Error("Poliklinik tersebut tidak ditemukan");
             filter["polyclinicId"] = polyclinicId
         }
+        if (day) {
+            filter["day"] = day
+        }
 
-        const schedules = await findAllSchedules({ ...filter, day });
+        const schedules = await findAllSchedules(filter, skip, limit);
 
         if (time) {
             const response = schedules.find(s => s.startTime <= time && s.endTime >= time)

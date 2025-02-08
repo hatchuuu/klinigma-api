@@ -33,7 +33,7 @@ export const getUserById = async (id) => {
     }
 }
 
-export const createUser = async (payload, imageId, imageSelfie) => {
+export const createUser = async (payload) => {
     try {
         const { email, password } = payload;
         const validatedEmail = await findUserByEmail(email);
@@ -53,8 +53,6 @@ export const createUser = async (payload, imageId, imageSelfie) => {
             {
                 ...payload,
                 password: hashPassword,
-                imageId,
-                imageSelfie
             }
         );
         return user;

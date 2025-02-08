@@ -75,18 +75,7 @@ export const findUserByNumber = async (numberKTP, numberBPJS) => {
     try {
         const user = await prisma.users.findUnique({
             where: { numberKTP, numberBPJS },
-            select: {
-                id: true,
-                name: true,
-                password: true,
-                email: true,
-                gender: true,
-                birthDate: true,
-                phoneNumber: true,
-                createdAt: true,
-                updatedAt: true,
-                queues: true,
-            }
+            select: { id: true }
         });
         return user;
     } catch (error) {

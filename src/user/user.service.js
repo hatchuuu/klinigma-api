@@ -1,7 +1,5 @@
-//functionya re-usable
 import { genSalt, hash } from 'bcrypt'
-import { deleteUser, editUser, findAllUsers, findUserByEmail, findUserById, insertUser } from "./user.repository.js";
-// import { createFilePath } from '../../utils/multer.js';
+import { deleteUser, editUser, findAllUsers, findUserByEmail, findUserById, findUserByNumber, insertUser } from "./user.repository.js";
 
 const encryptPassword = async (password) => {
     const salt = await genSalt(10);
@@ -37,16 +35,16 @@ export const createUser = async (payload) => {
     try {
         const { email, password } = payload;
         const validatedEmail = await findUserByEmail(email);
-        // const validatedKTP = await findUserByKTP(payload.numberKTP);
-        // const validatedBPJS = await findUserByBPJS(payload.numberBPJS);
-        // if (validatedKTP) {
-        //     throw new Error("Nomor KTP sudah terdaftar");
-        // }
-        // if (validatedBPJS) {
-        //     throw new Error("Nomor BPJS sudah terdaftar");
-        // }
+        const validatedKTP = await findUserByNumber(payload.numberKTP, undefined);
+        const validatedBPJS = await findUserByNumber(undefined, payload.numberBPJS);
         if (validatedEmail) {
             throw new Error("Email sudah terdaftar");
+        }
+        if (validatedKTP) {
+            throw new Error("Nomor KTP sudah terdaftar");
+        }
+        if (validatedBPJS) {
+            throw new Error("Nomor BPJS sudah terdaftar");
         }
         const hashPassword = await encryptPassword(password);
         const user = await insertUser(

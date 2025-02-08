@@ -80,7 +80,6 @@ export const findUserByNumber = async (numberKTP, numberBPJS) => {
                 name: true,
                 password: true,
                 email: true,
-                location: true,
                 gender: true,
                 birthDate: true,
                 phoneNumber: true,

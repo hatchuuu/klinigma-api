@@ -1,6 +1,6 @@
 //functionya re-usable
 import { genSalt, hash } from 'bcrypt'
-import { deleteUser, editUser, findAllUsers, findUserByBPJS, findUserByEmail, findUserById, findUserByKTP, insertUser } from "./user.repository.js";
+import { deleteUser, editUser, findAllUsers, findUserByEmail, findUserById, insertUser } from "./user.repository.js";
 // import { createFilePath } from '../../utils/multer.js';
 
 const encryptPassword = async (password) => {
